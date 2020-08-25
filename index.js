@@ -5,6 +5,7 @@
  */
 
 const Client = require('mongodb').MongoClient;
+Promise = require('bluebird');
 const zlib = require('zlib');
 const _ = require('lodash');
 const validOptionNames = ['poolSize', 'ssl', 'sslValidate', 'sslCA', 'sslCert',
@@ -46,25 +47,20 @@ class MongoStore {
 
   getCollection() {
     var store = this;
-
-    return new Promise((resolve, reject) => {
-      try {
-        if (store.client && store.collection)
-          return resolve(store.collection);
-        return resolve(store.initClient());
-      } catch(error) {
-        reject(error);
-      }
+    return Promise.try(() => {
+      if (store.client && store.collection)
+        return store.collection;
+      return store.initClient();
     });
 
   }
 
   initClient() {
     var store = this;
-    let uri = store.uri;
-
-    return Client.connect(uri, _.pick(store.MongoOptions, validOptionNames)
-    ).then((client) => {
+    return Promise.try(() => {
+      let uri = store.uri;
+      return Client.connect(uri, _.pick(store.MongoOptions, validOptionNames));
+    }).then((client) => {
       return client.db();
     }).then((db) => {
       store.client = db;
