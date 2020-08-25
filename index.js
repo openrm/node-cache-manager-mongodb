@@ -5,7 +5,7 @@
  */
 
 const Client = require('mongodb').MongoClient;
-Promise = require('bluebird');
+const Promise = require('bluebird');
 const zlib = require('zlib');
 const _ = require('lodash');
 const validOptionNames = ['poolSize', 'ssl', 'sslValidate', 'sslCA', 'sslCert',
